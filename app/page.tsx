@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 const colleges = [
@@ -35,7 +36,7 @@ const colleges = [
   },
 ];
 
-export default function CollegePage() {
+function CollegeContent() {
   const searchParams = useSearchParams();
 
   const collegeName =
@@ -80,7 +81,6 @@ export default function CollegePage() {
 
       {/* College Header */}
       <section className="bg-blue-700 px-6 py-14 text-center text-white">
-
         <h1 className="text-5xl font-bold">
           {college.name}
         </h1>
@@ -94,7 +94,6 @@ export default function CollegePage() {
             ⭐ {college.rating} Rating
           </span>
         </div>
-
       </section>
 
       {/* Details */}
@@ -102,7 +101,6 @@ export default function CollegePage() {
 
         {/* Overview */}
         <div className="rounded-2xl bg-white p-8 shadow-md">
-
           <h2 className="text-3xl font-bold text-gray-900">
             Overview
           </h2>
@@ -110,14 +108,12 @@ export default function CollegePage() {
           <p className="mt-4 leading-7 text-gray-600">
             {college.description}
           </p>
-
         </div>
 
         {/* Courses + Fees */}
         <div className="mt-6 grid gap-6 md:grid-cols-2">
 
           <div className="rounded-2xl bg-white p-8 shadow-md">
-
             <h2 className="text-2xl font-bold text-gray-900">
               Courses
             </h2>
@@ -129,11 +125,9 @@ export default function CollegePage() {
                 </li>
               ))}
             </ul>
-
           </div>
 
           <div className="rounded-2xl bg-white p-8 shadow-md">
-
             <h2 className="text-2xl font-bold text-gray-900">
               Fees
             </h2>
@@ -141,14 +135,12 @@ export default function CollegePage() {
             <p className="mt-4 text-xl font-semibold text-blue-700">
               {college.fees}
             </p>
-
           </div>
 
         </div>
 
         {/* Placement */}
         <div className="mt-6 rounded-2xl bg-white p-8 shadow-md">
-
           <h2 className="text-2xl font-bold text-gray-900">
             Placements
           </h2>
@@ -156,19 +148,16 @@ export default function CollegePage() {
           <p className="mt-4 text-xl font-semibold text-green-600">
             Average Package: {college.placement}
           </p>
-
         </div>
 
         {/* Back */}
         <div className="mt-8 text-center">
-
           <a
             href="/#colleges"
             className="inline-block rounded-xl bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800"
           >
             ← Back to Colleges
           </a>
-
         </div>
 
       </section>
@@ -181,5 +170,13 @@ export default function CollegePage() {
       </footer>
 
     </main>
+  );
+}
+
+export default function CollegePage() {
+  return (
+    <Suspense fallback={<div className="p-10 text-center">Loading...</div>}>
+      <CollegeContent />
+    </Suspense>
   );
 }
