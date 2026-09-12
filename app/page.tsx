@@ -1,7 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 const colleges = [
   {
@@ -10,9 +9,6 @@ const colleges = [
     rating: 4.8,
     fees: "₹2.2 Lakh/year",
     placement: "₹25 LPA",
-    courses: ["B.Tech", "M.Tech", "M.Sc"],
-    description:
-      "IIT Delhi is a premier engineering institution offering programs in engineering, technology and science.",
   },
   {
     name: "IIT Bombay",
@@ -20,9 +16,6 @@ const colleges = [
     rating: 4.7,
     fees: "₹2.3 Lakh/year",
     placement: "₹26 LPA",
-    courses: ["B.Tech", "M.Tech", "M.Sc"],
-    description:
-      "IIT Bombay is a leading institute known for engineering, technology, research and innovation.",
   },
   {
     name: "IIT Kanpur",
@@ -30,21 +23,28 @@ const colleges = [
     rating: 4.6,
     fees: "₹2.1 Lakh/year",
     placement: "₹24 LPA",
-    courses: ["B.Tech", "M.Tech", "M.Sc"],
-    description:
-      "IIT Kanpur is a renowned institute focused on engineering, science, technology and research.",
   },
 ];
 
-function CollegeContent() {
-  const searchParams = useSearchParams();
+export default function Home() {
+  const [search, setSearch] = useState("");
+  const [compareList, setCompareList] = useState<string[]>([]);
 
-  const collegeName =
-    searchParams.get("name") || "IIT Delhi";
+  const filteredColleges = colleges.filter(
+    (college) =>
+      college.name.toLowerCase().includes(search.toLowerCase()) ||
+      college.location.toLowerCase().includes(search.toLowerCase())
+  );
 
-  const college =
-    colleges.find((item) => item.name === collegeName) ||
-    colleges[0];
+  const handleCompare = (name: string) => {
+    if (compareList.includes(name)) {
+      setCompareList(compareList.filter((item) => item !== name));
+    } else {
+      if (compareList.length < 3) {
+        setCompareList([...compareList, name]);
+      }
+    }
+  };
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -59,7 +59,10 @@ function CollegeContent() {
         </a>
 
         <div className="flex gap-6 text-white">
-          <a href="/" className="hover:text-blue-200">
+          <a
+            href="/"
+            className="font-semibold text-blue-200"
+          >
             Home
           </a>
 
@@ -79,87 +82,136 @@ function CollegeContent() {
         </div>
       </nav>
 
-      {/* College Header */}
-      <section className="bg-blue-700 px-6 py-14 text-center text-white">
+      {/* Hero Section */}
+      <section className="bg-blue-700 px-6 py-20 text-center text-white">
         <h1 className="text-5xl font-bold">
-          {college.name}
+          Find the Right College for You
         </h1>
 
-        <p className="mt-4 text-xl text-blue-100">
-          📍 {college.location}
+        <p className="mx-auto mt-5 max-w-2xl text-lg text-blue-100">
+          Discover colleges, explore important information,
+          and compare your options before making your decision.
         </p>
 
-        <div className="mt-5">
-          <span className="rounded-full bg-white px-5 py-2 font-semibold text-blue-700">
-            ⭐ {college.rating} Rating
-          </span>
+        {/* Search */}
+        <div className="mx-auto mt-8 flex max-w-2xl flex-col gap-3 sm:flex-row">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search college or city..."
+            className="flex-1 rounded-xl px-5 py-4 text-gray-900 outline-none"
+          />
+
+          <button
+            onClick={() => {
+              document
+                .getElementById("colleges")
+                ?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="rounded-xl bg-white px-7 py-4 font-semibold text-blue-700 hover:bg-blue-50"
+          >
+            Search
+          </button>
         </div>
       </section>
 
-      {/* Details */}
-      <section className="mx-auto max-w-5xl px-6 py-12">
-
-        {/* Overview */}
-        <div className="rounded-2xl bg-white p-8 shadow-md">
-          <h2 className="text-3xl font-bold text-gray-900">
-            Overview
-          </h2>
-
-          <p className="mt-4 leading-7 text-gray-600">
-            {college.description}
-          </p>
-        </div>
-
-        {/* Courses + Fees */}
-        <div className="mt-6 grid gap-6 md:grid-cols-2">
-
-          <div className="rounded-2xl bg-white p-8 shadow-md">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Courses
+      {/* Colleges Section */}
+      <section
+        id="colleges"
+        className="mx-auto max-w-6xl px-6 py-14"
+      >
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900">
+              Explore Colleges
             </h2>
 
-            <ul className="mt-4 space-y-3 text-gray-600">
-              {college.courses.map((course) => (
-                <li key={course}>
-                  ✓ {course}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="rounded-2xl bg-white p-8 shadow-md">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Fees
-            </h2>
-
-            <p className="mt-4 text-xl font-semibold text-blue-700">
-              {college.fees}
+            <p className="mt-2 text-gray-600">
+              Find colleges based on your preferences.
             </p>
           </div>
 
+          {compareList.length > 0 && (
+            <a
+              href="/compare"
+              className="rounded-xl bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800"
+            >
+              Compare Now →
+            </a>
+          )}
         </div>
 
-        {/* Placement */}
-        <div className="mt-6 rounded-2xl bg-white p-8 shadow-md">
-          <h2 className="text-2xl font-bold text-gray-900">
-            Placements
-          </h2>
+        {/* College Cards */}
+        <div className="grid gap-6 md:grid-cols-3">
+          {filteredColleges.length > 0 ? (
+            filteredColleges.map((college) => (
+              <div
+                key={college.name}
+                className={`rounded-2xl border bg-white p-6 shadow-md transition ${
+                  compareList.includes(college.name)
+                    ? "border-blue-600 ring-2 ring-blue-200"
+                    : "border-gray-100"
+                }`}
+              >
+                <h3 className="text-2xl font-bold text-gray-900">
+                  {college.name}
+                </h3>
 
-          <p className="mt-4 text-xl font-semibold text-green-600">
-            Average Package: {college.placement}
-          </p>
+                <p className="mt-3 text-gray-600">
+                  📍 {college.location}
+                </p>
+
+                <p className="mt-2 text-gray-600">
+                  ⭐ {college.rating} Rating
+                </p>
+
+                <p className="mt-2 text-gray-600">
+                  💰 {college.fees}
+                </p>
+
+                <p className="mt-2 font-semibold text-green-600">
+                  📈 {college.placement}
+                </p>
+
+                {/* Buttons */}
+                <div className="mt-6 flex flex-col gap-3">
+                  <a
+                    href={`/college?name=${encodeURIComponent(
+                      college.name
+                    )}`}
+                    className="rounded-xl bg-blue-700 py-3 text-center font-semibold text-white hover:bg-blue-800"
+                  >
+                    View Details
+                  </a>
+
+                  <button
+                    onClick={() => handleCompare(college.name)}
+                    className={`rounded-xl py-3 font-semibold text-white ${
+                      compareList.includes(college.name)
+                        ? "bg-gray-600 hover:bg-gray-700"
+                        : "bg-green-600 hover:bg-green-700"
+                    }`}
+                  >
+                    {compareList.includes(college.name)
+                      ? "Remove from Compare"
+                      : "Add to Compare"}
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full rounded-2xl bg-white p-10 text-center shadow">
+              <h3 className="text-xl font-semibold text-gray-900">
+                No colleges found
+              </h3>
+
+              <p className="mt-2 text-gray-600">
+                Try searching with another college name or city.
+              </p>
+            </div>
+          )}
         </div>
-
-        {/* Back */}
-        <div className="mt-8 text-center">
-          <a
-            href="/#colleges"
-            className="inline-block rounded-xl bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800"
-          >
-            ← Back to Colleges
-          </a>
-        </div>
-
       </section>
 
       {/* Footer */}
@@ -170,13 +222,5 @@ function CollegeContent() {
       </footer>
 
     </main>
-  );
-}
-
-export default function CollegePage() {
-  return (
-    <Suspense fallback={<div className="p-10 text-center">Loading...</div>}>
-      <CollegeContent />
-    </Suspense>
   );
 }
